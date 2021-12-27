@@ -1,4 +1,4 @@
-import {
+const {
 	getSongUrlXHR,
 	getAllListSongXHR,
 	getArtistInfoXHR,
@@ -6,10 +6,10 @@ import {
 	getLyricXHR,
 	getSongStatusXHR,
 	download,
-} from "../model";
-import { UID, COOKIE, PLAYLIST, DOWNLOADPATH } from "../config";
-import chalk from "chalk";
-import fs from "fs";
+} = require("../model");
+const { UID, COOKIE, PLAYLIST, DOWNLOADPATH } = require("../config");
+const chalk = require("chalk");
+const fs = require("fs");
 
 const getAllListSong = async () => {
 	const fetchs = PLAYLIST.map((id) => getAllListSongXHR(id));
@@ -20,11 +20,12 @@ const getAllListSong = async () => {
 			const songs = data[i].songs.map((v) => {
 				const { name, id, al, ar, mv, publishTime, h, m, l } = v;
 
+				console.log("作者", ar.id, ar.name);
 				return {
 					name,
 					id,
 					picUrl: al.picUrl,
-					author: { id: ar.id, name: ar.name },
+					artists: ar.map((v) => ({ id: v.id, nickname: v.name })),
 					album: { id: al.id, name: al.name, picUrl: al.picUrl },
 					mv,
 					publishTime,
@@ -34,7 +35,6 @@ const getAllListSong = async () => {
 			return { ...obj, [id]: songs };
 		}, {});
 
-		console.log("歌曲 format", result);
 		return result;
 	});
 };
@@ -59,6 +59,7 @@ const getArtistInfo = async (artists = []) => {
 	console.log(chalk.cyanBright("开始获取歌手信息"));
 	Promise.all(artists.map((id) => getArtistInfoXHR(id))).then((data) => {
 		console.log(chalk.green("歌手信息获取完毕"), data);
+		if (!data.length) return [];
 		const result = data.map((v) => {
 			const {
 				artist: { id },
@@ -123,4 +124,22 @@ const downloadFile = async (url, id) => {
 	}
 };
 
-export { getAllListSong, getLyric, getArtistInfo, getArtistDesc, getSongUrl, downloadFile };
+const downJsonataTask = async () => {
+	const listMap = await getAllListSong();
+	const artistSet = new Set();
+
+	Object.values(listMap).map((l) =>
+		l.map((d) => {
+			console.log("歌手 id", d);
+			d.artists.map((a) => artistSet.add(a.id));
+		})
+	);
+
+	const artistInfoData = await getArtistInfo([...artistSet]);
+	const artistWholeData = await getArtistDesc(artistInfoData);
+	console.log("全部歌手完整信息", artistWholeData);
+};
+
+module.exports = {
+	downJsonataTask,
+};

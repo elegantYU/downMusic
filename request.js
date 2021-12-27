@@ -7,4 +7,11 @@ const request = axios.create({
 	timeout: 60000,
 });
 
+request.interceptors.response.use((response) => {
+	if (response.status === 200) {
+		return Promise.resolve(response.data);
+	}
+	return Promise.reject(response);
+});
+
 module.exports = request;

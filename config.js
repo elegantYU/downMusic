@@ -5,6 +5,7 @@ const UID = 103973269;
 const PLAYLIST = [7188086413];
 const QUALITY = "l"; //  'h', 'm', 'l', ''无损
 const DOWNLOADPATH = path.resolve(__dirname, "/download");
+const MUSIC_PATH = "https://www.elegantyu.com";
 
 module.exports = {
 	UID,
@@ -12,4 +13,5 @@ module.exports = {
 	PLAYLIST,
 	QUALITY,
 	DOWNLOADPATH,
+	MUSIC_PATH,
 };

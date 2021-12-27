@@ -1,6 +1,6 @@
 // 所有用到的接口
-import request from "../request";
-import { UID, COOKIE, PLAYLIST } from "../config";
+const request = require("../request");
+const { UID, COOKIE, PLAYLIST } = require("../config");
 
 // 获取歌单所有歌曲
 const getAllListSongXHR = async (id) => request.get("/playlist/track/all", { params: { id } });
@@ -27,7 +27,7 @@ const download = async (url) =>
 		responseType: "stream",
 	});
 
-export {
+module.exports = {
 	getAllListSongXHR,
 	getSongUrlXHR,
 	getSongStatusXHR,
