@@ -20,7 +20,6 @@ const getAllListSong = async () => {
 			const songs = data[i].songs.map((v) => {
 				const { name, id, al, ar, mv, publishTime, h, m, l } = v;
 
-				console.log("作者", ar.id, ar.name);
 				return {
 					name,
 					id,
@@ -57,22 +56,18 @@ const getLyric = async (list = []) => {
 // 获取所有歌手信息
 const getArtistInfo = async (artists = []) => {
 	console.log(chalk.cyanBright("开始获取歌手信息"));
-	Promise.all(artists.map((id) => getArtistInfoXHR(id))).then((data) => {
+	return Promise.all(artists.map((id) => getArtistInfoXHR(id))).then((data) => {
 		console.log(chalk.green("歌手信息获取完毕"), data);
 		if (!data.length) return [];
-		const result = data.map((v) => {
+		const result = data.map(({ data: d }) => {
 			const {
-				artist: { id },
-				user: { backgroundUrl, birthday, signature, nickname, avatarUrl },
-			} = v;
+				artist: { id, name, cover },
+			} = d;
 
 			return {
 				id,
-				nickname,
-				avatar: avatarUrl,
-				background: backgroundUrl,
-				birthday,
-				signature,
+				nickname: name,
+				avatar: cover,
 			};
 		});
 
@@ -136,6 +131,7 @@ const downJsonataTask = async () => {
 	);
 
 	const artistInfoData = await getArtistInfo([...artistSet]);
+	console.log("artistInfoData", artistInfoData);
 	const artistWholeData = await getArtistDesc(artistInfoData);
 	console.log("全部歌手完整信息", artistWholeData);
 };
