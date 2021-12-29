@@ -27,9 +27,9 @@ const getAllListSong = async () => {
 				return {
 					name,
 					id,
-					picUrl: al.picUrl,
+					cover: al.picUrl,
 					artists: ar.map((v) => ({ id: v.id, nickname: v.name })),
-					album: { id: al.id, name: al.name, picUrl: al.picUrl },
+					album: { id: al.id, name: al.name, cover: al.picUrl },
 					mv,
 					publishTime,
 				};
@@ -113,7 +113,6 @@ const task = async () => {
 
 	// 出歌曲
 	const playListData = await Promise.all(playList.map((l) => getLyric(l)));
-	console.log("带歌词的音乐信息", playListData);
 
 	// 获取歌曲链接并下载
 	const playListWholeData = await Promise.all(playListData.map((l) => downloadSongs(l)));
@@ -122,7 +121,6 @@ const task = async () => {
 	// 出歌手
 	const artistInfoData = await getArtistInfo([...artistSet]);
 	const artistWholeData = await getArtistDesc(artistInfoData);
-	// console.log("全部歌手完整信息", artistWholeData);
 	makeJsonFile(artistWholeData, "artists");
 };
 
