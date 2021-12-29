@@ -4,7 +4,7 @@ const COOKIE = `MUSIC_A_T=1447087931074; Max-Age=2147483647; Expires=Fri, 13 Jan
 const UID = 103973269;
 const PLAYLIST = [7188086413];
 const QUALITY = "l"; //  'h', 'm', 'l', ''无损
-const DOWNLOADPATH = path.resolve(__dirname, "/download");
+const DOWNLOADPATH = path.join(__dirname, "/music");
 const MUSIC_PATH = "https://www.elegantyu.com";
 
 module.exports = {

@@ -12,7 +12,8 @@
 	"license": "ISC",
 	"dependencies": {
 		"axios": "^0.24.0",
-		"chalk": "4.1.2"
+		"chalk": "4.1.2",
+		"http": "^0.0.1-security"
 	},
 	"devDependencies": {
 		"eslint": "^8.5.0"

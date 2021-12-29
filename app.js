@@ -1,3 +1,3 @@
-const { downJsonataTask } = require("./controller");
+const { task } = require("./controller");
 
-downJsonataTask();
+task();
