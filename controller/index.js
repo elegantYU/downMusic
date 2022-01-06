@@ -95,7 +95,13 @@ const getSongUrl = async (list = []) => {
 	const ids = list.map((v) => v.id).join(",");
 	return getSongUrlXHR(ids).then(({ data }) => {
 		console.log(chalk.green("获取歌曲链接完毕"));
-		const result = data.map(({ url, size, br }, i) => ({ ...list[i], url, size, br }));
+		const result = data.map(({ url, size, br }, i) => ({
+			...list[i],
+			url: `/static/music/${ids[i]}`,
+			originUrl: url,
+			size,
+			br,
+		}));
 		return result;
 	});
 };
@@ -134,7 +140,7 @@ const downloadSongs = async (list) => {
 
 const makeJsonFile = (json, name) => {
 	const str = JSON.stringify(json);
-	const filePath = path.join(__dirname, `../output/${name}_${Date.now()}.json`);
+	const filePath = path.join(__dirname, `../output/${name}.json`);
 
 	return new Promise((resolve) => {
 		fs.writeFile(filePath, str, (err) => {
