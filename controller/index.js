@@ -92,8 +92,9 @@ const getArtistDesc = async (artists = []) => {
 
 const getSongUrl = async (list = []) => {
 	console.log(chalk.cyanBright("开始请求歌曲链接"));
-	const ids = list.map((v) => v.id).join(",");
-	return getSongUrlXHR(ids).then(({ data }) => {
+	const ids = list.map((v) => v.id);
+	const sids = ids.join(",");
+	return getSongUrlXHR(sids).then(({ data }) => {
 		console.log(chalk.green("获取歌曲链接完毕"));
 		const result = data.map(({ url, size, br }, i) => ({
 			...list[i],
@@ -132,8 +133,7 @@ const task = async () => {
 
 const downloadSongs = async (list) => {
 	const songs = await getSongUrl(list);
-
-	await Promise.all(songs.map((v) => download(v.url, v.id)));
+	await Promise.all(songs.map((v) => download(v.originUrl, v.id)));
 
 	return songs;
 };
