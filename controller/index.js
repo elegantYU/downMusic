@@ -1,3 +1,6 @@
+const chalk = require("chalk");
+const fs = require("fs");
+const path = require("path");
 const {
 	getSongUrlXHR,
 	getAllListSongXHR,
@@ -7,13 +10,10 @@ const {
 	getSongStatusXHR,
 	download,
 } = require("../model");
+const { getDatabaseListXHR } = require("../model/upload");
 const { PLAYLIST } = require("../config");
-const chalk = require("chalk");
-const fs = require("fs");
-const path = require("path");
 
 const artistSet = new Set();
-const songSet = new Set();
 
 const getAllListSong = async () => {
 	const fetchs = PLAYLIST.map((id) => getAllListSongXHR(id));
@@ -42,9 +42,18 @@ const getAllListSong = async () => {
 	});
 };
 
+const getDatabaseList = async () => {
+	const {
+		data: { data },
+	} = await getDatabaseListXHR();
+
+	return data.map((v) => v.id);
+};
+
 // 获取所有歌的歌词
 const getLyric = async (list = []) => {
 	console.log(chalk.cyanBright("开始获取所有歌词"));
+
 	return Promise.all(list.map((v) => getLyricXHR(v.id))).then((data) => {
 		console.log(chalk.green("歌词获取完毕"));
 		const result = list.map((v, i) => {
@@ -96,25 +105,29 @@ const getSongUrl = async (list = []) => {
 	const sids = ids.join(",");
 	return getSongUrlXHR(sids).then(({ data }) => {
 		console.log(chalk.green("获取歌曲链接完毕"));
-		const result = data.map(({ url, size, br }, i) => ({
-			...list[i],
-			url: `/static/music/${ids[i]}`,
-			originUrl: url,
-			size,
-			br,
-		}));
+		const result = data
+			.filter((v) => v.url)
+			.map(({ url, size, br }, i) => ({
+				...list[i],
+				url: `/static/music/${ids[i]}`,
+				originUrl: url,
+				size,
+				br,
+			}));
 		return result;
 	});
 };
 
 const task = async () => {
 	const listMap = await getAllListSong();
-	const playList = Object.values(listMap);
+	const databaseList = await getDatabaseList();
+	const playList = Object.values(listMap).map((l) =>
+		l.filter((d) => {
+			if (!databaseList.includes(d.id)) {
+				d.artists.map((a) => artistSet.add(a.id));
 
-	playList.map((l) =>
-		l.map((d) => {
-			d.artists.map((a) => artistSet.add(a.id));
-			songSet.add(d.id);
+				return d;
+			}
 		})
 	);
 
